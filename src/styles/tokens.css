@@ -1,0 +1,107 @@
+/* MORE DRAMA · design tokens (εγκρίθηκαν 15/11/2026)
+   Κανόνας αντίθεσης: κείμενο γράφεται μόνο με charcoal ή espresso πάνω σε ανοιχτά,
+   και με ivory πάνω σε charcoal, espresso ή teal-deep. Το teal και το yellow είναι επιφάνειες, όχι κείμενο. */
+
+@font-face {
+  font-family: "Arimo";
+  src: url("/fonts/Arimo-VariableFont_wght.ttf") format("truetype");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Arimo";
+  src: url("/fonts/Arimo-Italic-VariableFont_wght.ttf") format("truetype");
+  font-weight: 400 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "GFS Artemisia";
+  src: url("/fonts/GFSArtemisia.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "GFS Artemisia";
+  src: url("/fonts/GFSArtemisiaItalic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "GFS Artemisia";
+  src: url("/fonts/GFSArtemisiaBold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "GFS Artemisia";
+  src: url("/fonts/GFSArtemisiaBoldIt.ttf") format("truetype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  /* Παλέτα */
+  --md-ivory: #f5f0e8;
+  --md-sand: #e8e0d0;
+  --md-tan: #c8b89a;
+  --md-teal: #7a9ea6;
+  --md-teal-deep: #3f6068;
+  --md-yellow: #f2dd55;
+  --md-charcoal: #2b2b2b;
+  --md-espresso: #3a2315;
+
+  /* Ρόλοι */
+  --md-bg: var(--md-ivory);
+  --md-surface: var(--md-sand);
+  --md-text: var(--md-charcoal);
+  --md-text-strong: var(--md-espresso);
+  --md-link: var(--md-teal-deep);          /* 6,0:1 πάνω σε ivory */
+  --md-accent: var(--md-teal);             /* μόνο επιφάνειες και διακοσμητικά */
+  --md-highlight: var(--md-yellow);        /* μόνο γεμάτη επιφάνεια με σκούρο κείμενο */
+  --md-border: var(--md-tan);
+  --md-focus: var(--md-teal-deep);
+
+  /* Τυπογραφία */
+  --md-font-display: "GFS Artemisia", Georgia, "Times New Roman", serif;
+  --md-font-body: "Arimo", Arial, Helvetica, sans-serif;
+  --md-text-body: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);   /* 16–18px */
+  --md-text-small: 0.875rem;
+  --md-text-h1: clamp(2.125rem, 1.4rem + 3.2vw, 4rem);      /* 34–64px */
+  --md-text-h2: clamp(1.625rem, 1.3rem + 1.4vw, 2.5rem);
+  --md-text-h3: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+  --md-leading-body: 1.6;
+  --md-leading-tight: 1.15;
+  --md-measure: 70ch;                                        /* 65–75 χαρακτήρες */
+
+  /* Αποστάσεις: 4, 8, 12, 16, 24, 32, 48, 64 */
+  --md-space-1: 0.25rem;
+  --md-space-2: 0.5rem;
+  --md-space-3: 0.75rem;
+  --md-space-4: 1rem;
+  --md-space-5: 1.5rem;
+  --md-space-6: 2rem;
+  --md-space-7: 3rem;
+  --md-space-8: 4rem;
+
+  /* Διάταξη */
+  --md-container: 75rem;                                     /* 1200px */
+  --md-gutter: clamp(1.25rem, 0.5rem + 3vw, 3rem);           /* 20px κινητό, έως 48px desktop */
+  --md-radius: 0.5rem;
+  --md-radius-lg: 0.75rem;
+  --md-touch: 2.75rem;                                       /* 44px ελάχιστος στόχος αφής */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
