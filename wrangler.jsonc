@@ -1,0 +1,9 @@
+{
+  // Static Astro build served from Cloudflare Workers.
+  "name": "more-drama-site",
+  "compatibility_date": "2026-11-19",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  }
+}
