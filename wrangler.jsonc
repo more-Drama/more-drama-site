@@ -1,9 +1,13 @@
 {
-  // Static Astro build served from Cloudflare Workers.
+  // Static Astro build served from Cloudflare Workers, behind a password
+  // until launch (see worker/index.js).
   "name": "more-drama",
+  "main": "worker/index.js",
   "compatibility_date": "2026-11-19",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "404-page"
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": true
   }
 }
