@@ -1,0 +1,24 @@
+---
+import { preparePage } from '../lib/pages';
+import type { CollectionEntry } from 'astro:content';
+interface Props {
+  template: string;
+  story: CollectionEntry<'stories'>;
+}
+const { template, story } = Astro.props;
+const page = await preparePage(template, story.data);
+---
+<!doctype html>
+<html lang="el">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="description" content={page.description} />
+    <title>{page.title}</title>
+    <style is:inline set:html={page.styles}></style>
+  </head>
+  <body>
+    <Fragment set:html={page.body} />
+  </body>
+</html>

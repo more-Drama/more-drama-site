@@ -1,0 +1,13 @@
+---
+import { getEntry } from 'astro:content';
+import routes from '../../templates/routes.json';
+import Preview from '../../layouts/Preview.astro';
+export function getStaticPaths() {
+  return Object.values(routes).filter(route => route.startsWith('/preview/')).map(route => ({
+    params: { page: route.split('/')[2] },
+  }));
+}
+const story = await getEntry('stories', 'kyriaki');
+if (!story) throw new Error('Η συνέντευξη της Κυριακής λείπει.');
+---
+<Preview template={Astro.params.page!} story={story} />
