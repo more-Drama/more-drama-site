@@ -7,7 +7,7 @@ import eventsData from '../data/events.json';
 const templates = import.meta.glob('../templates/*.html', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
 type Story = CollectionEntry<'stories'>['data'];
 
-type EventItem = { id: string; date: string; time?: string; title: string; place: string; price: string; organizer?: string; desc: string; source?: string; verify?: string };
+type EventItem = { id: string; date: string; time?: string; title: string; place: string; price: string; organizer?: string; desc: string; source?: string; verify?: string; article?: { title: string; href: string } };
 const DOW = ['Κυριακή', 'Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή', 'Σάββατο'];
 const MONTHS = ['Ιανουαρίου', 'Φεβρουαρίου', 'Μαρτίου', 'Απριλίου', 'Μαΐου', 'Ιουνίου', 'Ιουλίου', 'Αυγούστου', 'Σεπτεμβρίου', 'Οκτωβρίου', 'Νοεμβρίου', 'Δεκεμβρίου'];
 const allEvents = (eventsData as EventItem[]).slice().sort((a, b) => (a.date + (a.time || '')).localeCompare(b.date + (b.time || '')));
@@ -123,7 +123,7 @@ export async function preparePage(key: string, story: Story) {
     pane.append(allEvents.map(e => {
       const p = eventParts(e);
       const meta = [e.time, e.place].filter(Boolean).join(' · ');
-      return `<details class="event" id="event-${escape(e.id)}" data-date="${e.date}"><summary><time datetime="${e.date}"><b>${p.day}</b><i>/${p.month}</i><small>${p.dow}</small></time><span><strong>${escape(e.title)}</strong><small>${escape(meta)}</small></span></summary><p>${escape(e.desc)}</p><p><a class="eventLink" data-event="${escape(e.id)}" href="/preview/event/?id=${escape(e.id)}">Δες την εκδήλωση ↗</a></p></details>`;
+      return `<details class="event" id="event-${escape(e.id)}" data-date="${e.date}"><summary><time datetime="${e.date}"><b>${p.day}</b><i>/${p.month}</i><small>${p.dow}</small></time><span><strong>${escape(e.title)}</strong><small>${escape(meta)}</small></span></summary><p>${escape(e.desc)}</p><p><a class="eventLink" data-event="${escape(e.id)}" href="/preview/event/?id=${escape(e.id)}">Δες την εκδήλωση ↗</a>${e.article ? ` · <a class="eventStory" href="${escape(e.article.href)}">Διάβασε την ιστορία: ${escape(e.article.title)} ↗</a>` : ''}</p></details>`;
     }).join(''));
     $('script').each((_, el) => {
       const code = $(el).html() || '';
@@ -136,9 +136,10 @@ export async function preparePage(key: string, story: Story) {
   if (key === 'event') {
     const map = Object.fromEntries(allEvents.map(e => {
       const p = eventParts(e);
-      return [e.id, { id: e.id, day: p.day, date: e.date, dow: p.dow, long: p.long, title: e.title, hour: e.time || 'Υπό επιβεβαίωση', place: e.place, price: e.price, desc: e.desc, organizer: e.organizer || '' }];
+      return [e.id, { id: e.id, day: p.day, date: e.date, dow: p.dow, long: p.long, title: e.title, hour: e.time || 'Υπό επιβεβαίωση', place: e.place, price: e.price, desc: e.desc, organizer: e.organizer || '', article: e.article || null }];
     }));
     $('.detailMeta').text('');
+    $('.intro').first().after('<p class="eventStory" hidden><a href="#"></a></p>');
     $('script').each((_, el) => {
       const code = $(el).html() || '';
       if (!code.includes('const events={')) return;
@@ -148,7 +149,7 @@ export async function preparePage(key: string, story: Story) {
         .replace("anchor:qs.get('anchor')||'2026-11-16'", "anchor:qs.get('anchor')||e?.date||''")
         .replace("'#event-'+(e?.day||'')", "'#event-'+(e?.id||'')")
         .replace("n.dataset.field==='date'?e.dow+' '+e.day+' Νοεμβρίου':e[n.dataset.field]", "n.dataset.field==='date'?e.long:e[n.dataset.field]")
-        .replace("document.querySelector('.intro').textContent=e.desc", "document.querySelector('.intro').textContent=e.desc;document.querySelector('.detailMeta').textContent=e.organizer?'Διοργάνωση: '+e.organizer:''"));
+        .replace("document.querySelector('.intro').textContent=e.desc", "document.querySelector('.intro').textContent=e.desc;document.querySelector('.detailMeta').textContent=e.organizer?'Διοργάνωση: '+e.organizer:'';const st=document.querySelector('.eventStory');if(st&&e.article){st.hidden=false;const a=st.querySelector('a');a.href=e.article.href;a.textContent='Διάβασε την ιστορία: '+e.article.title+' ↗'}"));
     });
   }
   $('a[href="/people/i-poli-sta-cheria-tis/"]').attr('href', href);
