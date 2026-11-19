@@ -1,0 +1,11 @@
+---
+import { getCollection } from 'astro:content';
+import Preview from '../../layouts/Preview.astro';
+export async function getStaticPaths() {
+  return (await getCollection('stories', entry => entry.data.category === 'culture')).map(story => ({
+    params: { slug: story.data.slug }, props: { story },
+  }));
+}
+const { story } = Astro.props;
+---
+<Preview template="story" story={story} />

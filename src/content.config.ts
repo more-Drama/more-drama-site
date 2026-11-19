@@ -8,13 +8,15 @@ const image = z.object({
   height: z.number().positive(),
   caption: z.string(),
   text: z.string().optional(),
+  focus: z.string().optional(),
 });
 const stories = defineCollection({
   loader: glob({ pattern: '*.json', base: './src/content/stories', generateId: ({ entry }) => entry.replace(/\.json$/, '') }),
   schema: z.object({
     slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
     status: z.enum(['draft', 'published']),
-    category: z.literal('people'),
+    category: z.enum(['people', 'culture']),
+    credit: z.string().optional(),
     title: z.string().min(1),
     intro: z.string().min(1),
     cardIntro: z.string().min(1),
@@ -27,6 +29,8 @@ const stories = defineCollection({
       items: z.array(z.discriminatedUnion('type', [
         z.object({ type: z.literal('image'), image }),
         z.object({ type: z.enum(['heading', 'paragraph', 'quote']), text: z.string() }),
+        z.object({ type: z.literal('list'), ordered: z.boolean().default(false), items: z.array(z.string()).min(1) }),
+        z.object({ type: z.literal('link'), text: z.string(), href: z.string() }),
       ])),
     })),
     seo: z.object({ title: z.string(), description: z.string(), keyword: z.string() }),

@@ -23,14 +23,20 @@ const escape = (text: string) => text.replace(/[&<>"']/g, char =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]!));
 
 function imageHtml(image: Story['cover'], lazy = true) {
-  return `<img src="${escape(image.src)}" alt="${escape(image.alt)}" width="${image.width}" height="${image.height}" ${lazy ? 'loading="lazy"' : 'fetchpriority="high"'}>`;
+  const focus = image.focus ? ` style="object-position:${escape(image.focus)}"` : '';
+  return `<img src="${escape(image.src)}" alt="${escape(image.alt)}" width="${image.width}" height="${image.height}"${focus} ${lazy ? 'loading="lazy"' : 'fetchpriority="high"'}>`;
 }
 function blocksHtml(story: Story) {
   return story.blocks.map(block => {
     const text: string[] = [];
     const pictures: string[] = [];
     for (const item of block.items) {
-      if (item.type === 'image') {
+      if (item.type === 'list') {
+        const tag = item.ordered ? 'ol' : 'ul';
+        text.push(`<${tag} class="answer">${item.items.map(entry => `<li>${escape(entry)}</li>`).join('')}</${tag}>`);
+      } else if (item.type === 'link') {
+        text.push(`<p class="answer"><a href="${escape(item.href)}">${escape(item.text)} ↗</a></p>`);
+      } else if (item.type === 'image') {
         pictures.push(`<figure>${imageHtml(item.image)}<figcaption>${escape(item.image.caption)}</figcaption>${item.image.text ? `<p class="imageStory">${escape(item.image.text)}</p>` : ''}</figure>`);
       } else {
         const tag = item.type === 'heading' ? 'h2' : item.type === 'quote' ? 'blockquote' : 'p';
@@ -47,7 +53,8 @@ function blocksHtml(story: Story) {
 export async function preparePage(key: string, story: Story) {
   const html = templates[`../templates/MORE-DRAMA-${key}.html`];
   const $ = load(html);
-  const href = `/people/${story.slug}/`;
+  const isPeople = story.category === 'people';
+  const href = isPeople ? `/people/${story.slug}/` : '/people/i-poli-sta-cheria-tis/';
   if (key === 'guides') {
     $('.gmheading h2').text('Τι να κάνεις στη Δράμα;');
     $('.clear44').removeAttr('hidden').text('Κάνε κλικ εδώ για να δεις όλες τις επιλογές της πόλης')
@@ -120,8 +127,14 @@ export async function preparePage(key: string, story: Story) {
   let title = $('title').text();
   let description = 'Άνθρωποι, ιστορίες και διαδρομές στη Δράμα από το more Drama.';
   if (key === 'story') {
-    $('.journal').addClass('peopleStory');
-    $('.coverInner > small').html('<em>more</em> People');
+    $('.journal').addClass(isPeople ? 'peopleStory' : 'cultureStory').attr('data-journal', story.category);
+    $('.coverInner > small').html(isPeople ? '<em>more</em> People' : '<em>more</em> Culture');
+    if (!isPeople) {
+      $('.storyPitch').remove();
+      $('.discoverMore').attr('href', '/preview/more-culture/');
+      $('.discoverMore small').html('<em>more</em> Culture');
+      $('.discoverMore strong').text('Ανακάλυψε κι άλλες ιστορίες της πόλης ↗');
+    }
     $('.discoverMore > img').remove();
     title = story.seo.title;
     description = story.seo.description;
@@ -131,7 +144,9 @@ export async function preparePage(key: string, story: Story) {
     $('.folioJ span').text(story.displayDate);
     $('.coverJ > img').replaceWith(imageHtml(story.cover, false));
     $('.opening,.contactSheet,.closing').remove();
-    $('.noteJ').text(story.disclaimer).before(blocksHtml(story));
+    $('.noteJ').before(blocksHtml(story));
+    if (story.credit) $('.leadJ').after(`<p class="creditJ">${escape(story.credit)}</p>`);
+    if (story.disclaimer) $('.noteJ').text(story.disclaimer); else $('.noteJ').remove();
   }
   if (key === 'more-people') {
     description = 'Γνώρισε τους ανθρώπους της Δράμας μέσα από συνεντεύξεις, πορτρέτα και ιστορίες του more People.';
@@ -190,6 +205,14 @@ export async function preparePage(key: string, story: Story) {
   $('.mast > nav > .findOpen').before('<a class="desk contact-link" href="/preview/partners/">Contact Us</a>');
   $('.mast .mobdrop .findOpen').before('<a href="/preview/partners/">Contact Us</a>');
   if (key === 'partners') {
+    // Until a form backend exists, the form opens the visitor's email app with the message ready.
+    const mailHandler = "f.onsubmit=e=>{e.preventDefault();const lines=[];for(const [k,v] of new FormData(f)){if(typeof v!=='string'||!v||v==='on')continue;const label=(f.elements[k]?.closest('label')?.firstChild?.textContent||k).trim();lines.push(label+': '+v)}location.href='mailto:moredrama.gr@gmail.com?subject='+encodeURIComponent('Συνεργασία με το more Drama')+'&body='+encodeURIComponent(lines.join('\\n'));f.querySelector('output').textContent='Ανοίγει το email σου με το μήνυμα έτοιμο. Πάτα «Αποστολή» για να φτάσει σε εμάς.'}";
+    $('script').each((_, el) => {
+      const code = $(el).html() || '';
+      if (!code.includes("f.onsubmit=e=>{e.preventDefault();f.querySelector('output').textContent='Η δοκιμή ολοκληρώθηκε χωρίς αποστολή.'}")) return;
+      $(el).html(code.replace("f.onsubmit=e=>{e.preventDefault();f.querySelector('output').textContent='Η δοκιμή ολοκληρώθηκε χωρίς αποστολή.'}", mailHandler));
+    });
+    $('.partnerContact form').first().after('<p class="partnerMail">Ή γράψε μας απευθείας στο <a href="mailto:moredrama.gr@gmail.com">moredrama.gr@gmail.com</a></p>');
     $('.mast [aria-current="page"]').removeAttr('aria-current');
     $('.mast a[href="/preview/partners/"]').attr('aria-current', 'page');
   }

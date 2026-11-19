@@ -312,3 +312,9 @@ nav, footer, .moodLabel, .guideInstructions {
 }
 p em, p strong, p a, li > p, figcaption em, figcaption a,
 label span, button span:not(.linkArrow) { font-family: inherit !important; }
+
+/* Culture stories: credits and lists inside story text. */
+.journal .creditJ{font-size:14px;letter-spacing:.02em;opacity:.75;margin:-6px 0 0}
+.journal ul.answer,.journal ol.answer{padding-left:1.25em}
+.journal ul.answer li,.journal ol.answer li{margin:.35em 0}
+.journal .opening:not(:has(figure)){grid-template-columns:minmax(0,760px)}
