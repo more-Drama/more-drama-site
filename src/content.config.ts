@@ -25,12 +25,13 @@ const stories = defineCollection({
     displayDate: z.string(),
     cover: image,
     blocks: z.array(z.object({
-      layout: z.enum(['opening', 'contactSheet', 'closing']),
+      layout: z.enum(['opening', 'contactSheet', 'closing', 'recipe']),
       items: z.array(z.discriminatedUnion('type', [
         z.object({ type: z.literal('image'), image }),
         z.object({ type: z.enum(['heading', 'paragraph', 'quote']), text: z.string() }),
         z.object({ type: z.literal('list'), ordered: z.boolean().default(false), items: z.array(z.string()).min(1) }),
         z.object({ type: z.literal('link'), text: z.string(), href: z.string() }),
+        z.object({ type: z.literal('recipe'), title: z.string(), ingredients: z.array(z.string()).min(1), steps: z.array(z.string()).min(1) }),
       ])),
     })),
     seo: z.object({ title: z.string(), description: z.string(), keyword: z.string() }),

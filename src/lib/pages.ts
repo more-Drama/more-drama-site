@@ -26,14 +26,42 @@ function imageHtml(image: Story['cover'], lazy = true) {
   const focus = image.focus ? ` style="object-position:${escape(image.focus)}"` : '';
   return `<img src="${escape(image.src)}" alt="${escape(image.alt)}" width="${image.width}" height="${image.height}"${focus} ${lazy ? 'loading="lazy"' : 'fetchpriority="high"'}>`;
 }
+const PAPERCLIP = '<svg class="clip" viewBox="0 0 30 80" aria-hidden="true"><path d="M21 22V60a8 8 0 0 1-16 0V14a6 6 0 0 1 12 0v42a3 3 0 0 1-6 0V22" fill="none" stroke="#8a9296" stroke-width="2.6" stroke-linecap="round"/></svg>';
+function recipeHtml(block: Story['blocks'][number]) {
+  const intro: string[] = [];
+  const details: string[] = [];
+  let photo = '';
+  let card = '';
+  for (const item of block.items) {
+    if (item.type === 'image') {
+      photo = `<figure class="clipped">${PAPERCLIP}${imageHtml(item.image)}<figcaption>${escape(item.image.caption)}</figcaption></figure>`;
+    } else if (item.type === 'recipe') {
+      card = `<div class="handRecipe"><h3>${escape(item.title)}</h3><p class="handLabel">Υλικά</p><ul>${item.ingredients.map(entry => `<li><label><input type="checkbox"><span>${escape(entry)}</span></label></li>`).join('')}</ul><p class="handLabel">Βήματα</p><ol>${item.steps.map(entry => `<li>${escape(entry)}</li>`).join('')}</ol></div>`;
+    } else {
+      const target = card ? details : intro;
+      if (item.type === 'list') {
+        const tag = item.ordered ? 'ol' : 'ul';
+        target.push(`<${tag}>${item.items.map(entry => `<li>${escape(entry)}</li>`).join('')}</${tag}>`);
+      } else if (item.type === 'heading') {
+        target.push(card ? `<h3>${escape(item.text)}</h3>` : `<h2>${escape(item.text)}</h2>`);
+      } else if (item.type === 'paragraph' || item.type === 'quote') {
+        target.push(`<p class="answer">${escape(item.text)}</p>`);
+      }
+    }
+  }
+  return `<div class="recipe"><div class="recipeIntro">${intro.join('')}</div><div class="notebook">${photo}${card}</div><div class="recipeDetails">${details.join('')}</div></div>`;
+}
 function blocksHtml(story: Story) {
   return story.blocks.map(block => {
+    if (block.layout === 'recipe') return recipeHtml(block);
     const text: string[] = [];
     const pictures: string[] = [];
     for (const item of block.items) {
       if (item.type === 'list') {
         const tag = item.ordered ? 'ol' : 'ul';
         text.push(`<${tag} class="answer">${item.items.map(entry => `<li>${escape(entry)}</li>`).join('')}</${tag}>`);
+      } else if (item.type === 'recipe') {
+        continue;
       } else if (item.type === 'link') {
         text.push(`<p class="answer"><a href="${escape(item.href)}">${escape(item.text)} ↗</a></p>`);
       } else if (item.type === 'image') {
@@ -143,7 +171,7 @@ export async function preparePage(key: string, story: Story) {
     $('.leadJ').text(story.intro);
     $('.folioJ span').text(story.displayDate);
     $('.coverJ > img').replaceWith(imageHtml(story.cover, false));
-    $('.opening,.contactSheet,.closing').remove();
+    $('.opening,.contactSheet,.closing,.recipe').remove();
     $('.noteJ').before(blocksHtml(story));
     if (story.credit) $('.leadJ').after(`<p class="creditJ">${escape(story.credit)}</p>`);
     if (story.disclaimer) $('.noteJ').text(story.disclaimer); else $('.noteJ').remove();
