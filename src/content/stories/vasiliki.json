@@ -10,12 +10,12 @@
   "author": "Σύνταξη more Drama",
   "displayDate": "MORE People",
   "cover": {
-    "src": "/media/karavakia-limni-agias-varvaras-drama.webp",
-    "alt": "Η λίμνη της Αγίας Βαρβάρας στη Δράμα το βράδυ",
-    "width": 1024,
-    "height": 1536,
+    "src": "/media/vasiliki-portraito-monstera.webp",
+    "alt": "Η Βασιλική, ιδρύτρια του MORE DRAMA, χαμογελαστή δίπλα σε μια μονστέρα",
+    "width": 1086,
+    "height": 1448,
     "caption": "",
-    "focus": "50% 72%"
+    "focus": "50% 42%"
   },
   "blocks": [
     {
@@ -50,6 +50,21 @@
           "text": "Γύρισα γιατί δεν ταίριαζα. Όσο τακτοποιημένη και ωραία κι αν ήταν η ζωή μου, ένιωθα ότι δεν ήμουν σπίτι. Το «γιατί γύρισες;» υπήρχε, φυσικά, αφού μισθολογικά έπεσα κατακόρυφα. Αλλά ρίσκο ήταν και να φύγω, ρίσκο και να γυρίσω. Τουλάχιστον εδώ είμαι σπίτι μου."
         },
         {
+          "type": "image",
+          "image": {
+            "src": "/media/vasiliki-grafeio-jungle-drama.webp",
+            "alt": "Η Βασιλική στο γραφείο της Social Media Jungle στη Δράμα",
+            "width": 1200,
+            "height": 1000,
+            "caption": ""
+          }
+        }
+      ]
+    },
+    {
+      "layout": "opening",
+      "items": [
+        {
           "type": "heading",
           "text": "Δεν έψαξες δουλειά. Έφτιαξες τη δική σου."
         },
@@ -57,6 +72,46 @@
           "type": "paragraph",
           "text": "Ήμουν σε άρνηση να δουλέψω για Έλληνα εργοδότη και ελληνικό μισθό. Είχα συνηθίσει πολλή ελευθερία και ανεξαρτησία και ήθελα να τη συνεχίσω με τους δικούς μου όρους. Η Jungle ξεκίνησε τον Οκτώβριο του 2022, σχεδόν σαν φυσικό επόμενο βήμα, χωρίς συγκεκριμένο σχέδιο, και τον Μάιο του 2024 ανοίξαμε γραφείο στη Δράμα. Έχω την τύχη να δουλεύω με τις αδερφές μου. Και ένας λόγος που ήθελα να γίνει η Jungle ήταν αυτός: έχοντας μικρές αδερφές, σκεφτόμουν «αυτά τα πλάσματα πού θα δουλέψουν;». Ένιωθα ότι αν φτιάξω κάτι αξιόλογο, θα έχουν κι εκείνες, αν το επιλέξουν, έναν λόγο να μείνουν στη Δράμα."
         },
+        {
+          "type": "image",
+          "image": {
+            "src": "/media/vasiliki-welcome-to-the-jungle.webp",
+            "alt": "Η Βασιλική στο γραφείο της, με την πινακίδα Welcome to the Jungle",
+            "width": 1254,
+            "height": 1254,
+            "caption": "Welcome to the Jungle."
+          }
+        }
+      ]
+    },
+    {
+      "layout": "contactSheet",
+      "items": [
+        {
+          "type": "image",
+          "image": {
+            "src": "/media/vasiliki-omada-social-media-jungle-drama.webp",
+            "alt": "Η Βασιλική με την ομάδα της Social Media Jungle",
+            "width": 1518,
+            "height": 1036,
+            "caption": "Η ομάδα της Social Media Jungle."
+          }
+        },
+        {
+          "type": "image",
+          "image": {
+            "src": "/media/gyrisma-grafeio-social-media-jungle.webp",
+            "alt": "Γύρισμα στο γραφείο της Social Media Jungle, με φωτιστικά και κάμερα",
+            "width": 1200,
+            "height": 1000,
+            "caption": "«Εγώ θέλω περισσότερα.»"
+          }
+        }
+      ]
+    },
+    {
+      "layout": "opening",
+      "items": [
         {
           "type": "heading",
           "text": "Πώς έγινε τελικά το MORE DRAMA πραγματικότητα;"
@@ -87,6 +142,16 @@
       "layout": "closing",
       "items": [
         {
+          "type": "image",
+          "image": {
+            "src": "/media/vasiliki-kores-oneiroupoli-drama.webp",
+            "alt": "Η Βασιλική με τις δύο κόρες της, με ζωγραφισμένα πρόσωπα, στην Ονειρούπολη",
+            "width": 1086,
+            "height": 1448,
+            "caption": "Στην Ονειρούπολη, με τα κορίτσια."
+          }
+        },
+        {
           "type": "heading",
           "text": "Ποια είναι η δική σου Δράμα;"
         },
@@ -105,7 +170,12 @@
         {
           "type": "quote",
           "text": "«Κιόσκι by κιόσκι.»"
-        },
+        }
+      ]
+    },
+    {
+      "layout": "opening",
+      "items": [
         {
           "type": "heading",
           "text": "Τι θα έλεγες σε κάποιον που λέει «στη Δράμα δεν έχει τίποτα»;"
@@ -146,5 +216,5 @@
     "description": "Από την Trivago στη Γερμανία πίσω στη Δράμα. Η Βασιλική μιλά για το παράπονο, την επιστροφή και το γιατί υπάρχει MORE στη Drama.",
     "keyword": "MORE DRAMA ιδρύτρια"
   },
-  "disclaimer": "Προσχέδιο · Προσωρινή φωτογραφία εξωφύλλου μέχρι το γύρισμα με τη Βασιλική."
+  "disclaimer": "Προσχέδιο"
 }
