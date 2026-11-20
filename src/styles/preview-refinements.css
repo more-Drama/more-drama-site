@@ -347,3 +347,7 @@ label span, button span:not(.linkArrow) { font-family: inherit !important; }
 @media (max-width:760px){.journal .notebook{grid-template-columns:1fr;transform:none;padding-left:52px}.journal .notebook .clipped{max-width:82%}}
 .journal .handRecipe *,.journal .notebook .clipped figcaption{font-family:GB-Stefania,Georgia,serif!important}
 .eventStory{margin:18px 0 0;font-size:17px}.eventStory a{color:var(--md-teal-deep,#24535c);text-decoration:underline;text-underline-offset:4px}
+/* MORE People συνεντεύξεις: πλήρους πλάτους εισαγωγή, ερωτήσεις bold, απαντήσεις πλάγια */
+.peopleStory .leadJ{font-size:clamp(19px,2vw,26px);line-height:1.4;letter-spacing:-.01em;max-width:none}
+.peopleStory .opening h2,.peopleStory .closing h2{font-weight:700}
+.peopleStory p.answer{font-style:italic}
