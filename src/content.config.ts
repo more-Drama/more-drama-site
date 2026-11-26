@@ -9,6 +9,8 @@ const image = z.object({
   caption: z.string(),
   text: z.string().optional(),
   focus: z.string().optional(),
+  // true = η φωτογραφία δεν υπάρχει ακόμα· το src είναι το προγραμματισμένο SEO όνομα αρχείου.
+  placeholder: z.boolean().optional(),
 });
 const stories = defineCollection({
   loader: glob({ pattern: '*.json', base: './src/content/stories', generateId: ({ entry }) => entry.replace(/\.json$/, '') }),
@@ -16,6 +18,10 @@ const stories = defineCollection({
     slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
     status: z.enum(['draft', 'published']),
     category: z.enum(['people', 'culture']),
+    kicker: z.string().optional(),
+    order: z.number().optional(),
+    // true = το άρθρο ζει στη ρίζα (/<slug>/) αντί για /culture/<slug>/.
+    rootUrl: z.boolean().optional(),
     credit: z.string().optional(),
     title: z.string().min(1),
     intro: z.string().min(1),

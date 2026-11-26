@@ -1,5 +1,5 @@
 import { load } from 'cheerio';
-import type { CollectionEntry } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import refinements from '../styles/preview-refinements.css?raw';
 import imageSizes from '../templates/image-sizes.json';
 import eventsData from '../data/events.json';
@@ -22,7 +22,21 @@ const jsSafe = (value: unknown) => JSON.stringify(value).replace(/</g, '\\u003c'
 const escape = (text: string) => text.replace(/[&<>"']/g, char =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]!));
 
+// Inline markup in story text: **έντονα** and [κείμενο](/link/). Everything else is escaped.
+function inline(text: string) {
+  return escape(text)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\[([^\]]+)\]\(LINK\)/g, '$1 [LINK]')
+    .replace(/\[([^\]]+)\]\(((?:\/|https:\/\/)[^)\s]*)\)/g, '<a href="$2">$1</a>')
+    // Εκκρεμότητες της σύνταξης ([ΕΠΙΒΕΒΑΙΩΣΗ…], [LINK…], [ΦΩΤΟ…]) φαίνονται τονισμένες στην προεπισκόπηση.
+    .replace(/\[((?:ΕΠΙΒΕΒΑΙΩΣΗ|LINK|ΦΩΤΟ|ΣΗΜΕΙΩΣΗ|ΑΠΟΣΠΑΣΜΑ|ΒΙΝΤΕΟ|ΟΝΟΜΑ)[^\]]*)\]/g, '<mark class="todo">$1</mark>');
+}
+function placeholderHtml(image: Story['cover']) {
+  const file = image.src.replace('/media/', '');
+  return `<div class="imgPlaceholder" role="img" aria-label="${escape(image.alt)}" style="aspect-ratio:${image.width}/${image.height}"><span>Εδώ μπαίνει εικόνα</span><p>${escape(image.alt)}</p><code>${escape(file)}</code></div>`;
+}
 function imageHtml(image: Story['cover'], lazy = true) {
+  if (image.placeholder) return placeholderHtml(image);
   const focus = image.focus ? ` style="object-position:${escape(image.focus)}"` : '';
   return `<img src="${escape(image.src)}" alt="${escape(image.alt)}" width="${image.width}" height="${image.height}"${focus} ${lazy ? 'loading="lazy"' : 'fetchpriority="high"'}>`;
 }
@@ -59,7 +73,7 @@ function blocksHtml(story: Story) {
     for (const item of block.items) {
       if (item.type === 'list') {
         const tag = item.ordered ? 'ol' : 'ul';
-        text.push(`<${tag} class="answer">${item.items.map(entry => `<li>${escape(entry)}</li>`).join('')}</${tag}>`);
+        text.push(`<${tag} class="answer">${item.items.map(entry => `<li>${inline(entry)}</li>`).join('')}</${tag}>`);
       } else if (item.type === 'recipe') {
         continue;
       } else if (item.type === 'link') {
@@ -69,7 +83,7 @@ function blocksHtml(story: Story) {
       } else {
         const tag = item.type === 'heading' ? 'h2' : item.type === 'quote' ? 'blockquote' : 'p';
         const className = item.type === 'quote' ? 'hand' : item.type === 'paragraph' ? 'answer' : '';
-        text.push(`<${tag} class="${className}">${escape(item.text)}</${tag}>`);
+        text.push(`<${tag} class="${className}">${item.type === 'heading' ? escape(item.text) : inline(item.text)}</${tag}>`);
       }
     }
     const copy = text.length ? `<div>${text.join('')}</div>` : '';
@@ -176,6 +190,25 @@ export async function preparePage(key: string, story: Story) {
     $('.noteJ').before(blocksHtml(story));
     if (story.credit) $('.leadJ').after(`<p class="creditJ">${escape(story.credit)}</p>`);
     if (story.disclaimer) $('.noteJ').text(story.disclaimer); else $('.noteJ').remove();
+  }
+  if (key === 'more-culture') {
+    const culture = (await getCollection('stories', entry => entry.data.category === 'culture'))
+      .map(entry => entry.data)
+      .sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+    const url = (s: Story) => s.rootUrl ? `/${s.slug}/` : `/culture/${s.slug}/`;
+    const card = (s: Story) => `<figure class="panel36"><a class="findThumb" href="${url(s)}" aria-label="${escape(s.title)}">${imageHtml(s.cover)}</a><figcaption><small>${escape(s.kicker || 'Culture')}</small><h3><a href="${url(s)}">${escape(s.title)} ↗</a></h3><p>${escape(s.cardIntro)}</p></figcaption></figure>`;
+    const [lead] = culture;
+    if (lead) {
+      const split = $('.split36').first();
+      split.find('.splitcopy small').text(`Στο προσκήνιο · ${lead.kicker || 'Culture'}`);
+      split.find('.splitcopy h2').text(lead.title);
+      split.find('.splitcopy p').text(lead.cardIntro);
+      split.find('.readStory').attr('href', url(lead));
+      split.find('figure > img').replaceWith(imageHtml(lead.cover));
+      split.next('.findCredit').remove();
+    }
+    $('.topics .findsGrid').replaceWith(`<div class="cultureGrid">${culture.map(card).join('')}</div>`);
+    $('.pull37 blockquote').text('«Στη Δράμα, οι γιορτές ξεκινούν από το νερό. Με ένα καραβάκι και μια ευχή.»');
   }
   if (key === 'more-people') {
     description = 'Γνώρισε τους ανθρώπους της Δράμας μέσα από συνεντεύξεις, πορτρέτα και ιστορίες του more People.';

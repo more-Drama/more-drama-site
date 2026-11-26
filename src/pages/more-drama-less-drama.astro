@@ -1,0 +1,7 @@
+---
+import { getEntry } from 'astro:content';
+import Preview from '../layouts/Preview.astro';
+const story = await getEntry('stories', 'more-drama-less-drama');
+if (!story) throw new Error('Το άρθρο «MORE DRAMA, less drama» λείπει.');
+---
+<Preview template="story" story={story} />

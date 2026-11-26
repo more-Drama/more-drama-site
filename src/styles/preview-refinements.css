@@ -351,3 +351,20 @@ label span, button span:not(.linkArrow) { font-family: inherit !important; }
 .peopleStory .leadJ{font-size:clamp(19px,2vw,26px);line-height:1.4;letter-spacing:-.01em;max-width:none}
 .peopleStory .opening h2,.peopleStory .closing h2{font-weight:700}
 .peopleStory p.answer{font-style:italic}
+
+/* Θέση φωτογραφίας που δεν έχει έρθει ακόμα */
+.imgPlaceholder{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;width:100%;max-height:78vh;padding:24px;box-sizing:border-box;background:repeating-linear-gradient(135deg,#ebe5da 0 14px,#e4ddd0 14px 28px);border:2px dashed #8a9296;color:#2b2b2b;text-align:center;font:14px/1.45 Arial,sans-serif}
+.imgPlaceholder span{font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#3f6068}
+.imgPlaceholder p{margin:0;max-width:42ch}
+.imgPlaceholder code{font-size:12px;background:#f5f0e8;padding:2px 6px;border-radius:3px;word-break:break-all}
+.coverJ > .imgPlaceholder{position:absolute;inset:0;max-height:none;aspect-ratio:auto!important;z-index:-2;justify-content:flex-start;align-items:flex-end;text-align:right;padding:clamp(70px,7vw,90px) 6% 0}
+.coverJ > .imgPlaceholder p{max-width:30ch}
+.findThumb .imgPlaceholder{aspect-ratio:4/3!important;padding:12px;font-size:12px}
+.findThumb .imgPlaceholder p{display:none}
+.journal p.answer strong{font-weight:700}
+.journal p.answer a,.journal li a{color:var(--sea);text-decoration:underline}
+.cultureGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:clamp(20px,3vw,40px);width:88%;max-width:1180px;margin:0 auto}
+.cultureGrid .panel36{margin:0}
+.cultureGrid .findThumb img{width:100%;aspect-ratio:4/3;object-fit:cover;height:auto}
+.journal mark.todo{background:#f3e3b5;color:#5a4300;padding:0 4px;border-radius:3px;font-size:.88em}
+@media(max-width:640px){.coverJ > .imgPlaceholder{padding-top:16px}.coverJ > .imgPlaceholder p{display:none}}

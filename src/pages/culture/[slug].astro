@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import Preview from '../../layouts/Preview.astro';
 export async function getStaticPaths() {
-  return (await getCollection('stories', entry => entry.data.category === 'culture')).map(story => ({
+  return (await getCollection('stories', entry => entry.data.category === 'culture' && !entry.data.rootUrl)).map(story => ({
     params: { slug: story.data.slug }, props: { story },
   }));
 }
