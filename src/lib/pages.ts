@@ -212,9 +212,17 @@ export async function preparePage(key: string, story: Story) {
   }
   if (key === 'more-people') {
     description = 'Γνώρισε τους ανθρώπους της Δράμας μέσα από συνεντεύξεις, πορτρέτα και ιστορίες του more People.';
-    $('.splitcopy h2').text(story.title);
-    $('.splitcopy p').text(story.cardIntro);
-    $('.split36 figure > img').replaceWith(imageHtml(story.cover));
+    const people = (await getCollection('stories', entry => entry.data.category === 'people' && !entry.data.demo))
+      .map(entry => entry.data)
+      .sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+    const lead = people.find(p => p.slug === story.slug) || people[0] || story;
+    $('.splitcopy small').text(`Στο προσκήνιο · ${lead.kicker || 'more People'}`);
+    $('.splitcopy h2').text(lead.title);
+    $('.splitcopy p').text(lead.cardIntro);
+    $('.split36 .readStory').attr('href', `/people/${lead.slug}/`);
+    $('.split36 figure > img').replaceWith(imageHtml(lead.cover));
+    const card = (s: Story) => `<figure class="panel36"><a class="findThumb" href="/people/${s.slug}/" aria-label="${escape(s.title)}">${imageHtml(s.cover)}</a><figcaption><small>${escape(s.kicker || 'more People')}</small><h3><a href="/people/${s.slug}/">${escape(s.title)} ↗</a></h3><p>${escape(s.cardIntro)}</p></figcaption></figure>`;
+    $('.topics .spread').replaceWith(`<div class="cultureGrid">${people.map(card).join('')}</div>`);
   }
   if (key === 'home') {
     $('.hero .cta').text('Αυτό το Σαββατοκύριακο ↓');
@@ -241,6 +249,7 @@ export async function preparePage(key: string, story: Story) {
     $('#stories .feature h3').text(story.title);
     $('#stories .feature p').text(story.cardIntro);
     $('#stories .feature small').text(story.displayDate);
+    $('#stories .portrait > figcaption').text(story.cover.caption || story.kicker || '');
     $('.readCard[data-story="0"] strong,.storyText[data-id="0"] h3').text(story.title);
     // These source previews use CSS photographs in the home feature and carousel.
     $('head').append(`<style>.picture.artisan{background-image:url("${escape(story.cover.src)}")!important}</style>`);

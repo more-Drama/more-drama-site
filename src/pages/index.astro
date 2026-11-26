@@ -1,7 +1,7 @@
 ---
 import { getEntry } from 'astro:content';
 import Preview from '../layouts/Preview.astro';
-const story = await getEntry('stories', 'kyriaki');
-if (!story) throw new Error('Η συνέντευξη της Κυριακής λείπει.');
+const story = await getEntry('stories', 'vasiliki');
+if (!story) throw new Error('Η συνέντευξη της Βασιλικής λείπει.');
 ---
 <Preview template="home" story={story} />

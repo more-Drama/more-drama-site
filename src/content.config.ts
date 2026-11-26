@@ -22,6 +22,8 @@ const stories = defineCollection({
     order: z.number().optional(),
     // true = το άρθρο ζει στη ρίζα (/<slug>/) αντί για /culture/<slug>/.
     rootUrl: z.boolean().optional(),
+    // true = επινοημένο δείγμα σχεδίου· δεν εμφανίζεται στις λίστες.
+    demo: z.boolean().optional(),
     credit: z.string().optional(),
     title: z.string().min(1),
     intro: z.string().min(1),
