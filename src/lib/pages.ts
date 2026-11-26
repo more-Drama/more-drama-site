@@ -3,14 +3,41 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import refinements from '../styles/preview-refinements.css?raw';
 import imageSizes from '../templates/image-sizes.json';
 import eventsData from '../data/events.json';
+import programData from '../data/oneiroupoli-2026.json';
 
 const templates = import.meta.glob('../templates/*.html', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
 type Story = CollectionEntry<'stories'>['data'];
 
-type EventItem = { id: string; date: string; time?: string; title: string; place: string; price: string; organizer?: string; desc: string; source?: string; verify?: string; article?: { title: string; href: string } };
+type EventItem = { id: string; date: string; time?: string; title: string; place: string; price: string; organizer?: string; desc: string; source?: string; verify?: string; christmas?: boolean; article?: { title: string; href: string } };
 const DOW = ['Κυριακή', 'Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή', 'Σάββατο'];
 const MONTHS = ['Ιανουαρίου', 'Φεβρουαρίου', 'Μαρτίου', 'Απριλίου', 'Μαΐου', 'Ιουνίου', 'Ιουλίου', 'Αυγούστου', 'Σεπτεμβρίου', 'Οκτωβρίου', 'Νοεμβρίου', 'Δεκεμβρίου'];
-const allEvents = (eventsData as EventItem[]).slice().sort((a, b) => (a.date + (a.time || '')).localeCompare(b.date + (b.time || '')));
+// Το επίσημο πρόγραμμα της Ονειρούπολης ζει στο src/data/oneiroupoli-2026.json.
+// Από εκεί βγαίνουν αυτόματα: μία καταχώριση ατζέντας ανά ημέρα, ξεχωριστές για τα μεγάλα (highlight)
+// και τις παράλληλες εκδηλώσεις, καθώς και τα κουτιά «αυτή την εβδομάδα» στα άρθρα.
+type ProgramItem = { date: string; time: string; place: string; text: string; title?: string; highlight?: boolean; parallel?: boolean };
+export const PROGRAM_URL = '/culture/programma-oneiroupolis-drama/';
+const program = programData as ProgramItem[];
+const slugTime = (t: string) => t.replace(/[^0-9]/g, '').slice(0, 4);
+const manual = eventsData as EventItem[];
+const programEvents: EventItem[] = [];
+for (const date of [...new Set(program.filter(p => !p.parallel).map(p => p.date))]) {
+  const day = program.filter(p => p.date === date && !p.parallel);
+  programEvents.push({
+    id: `oneiroupoli-programma-${date}`, date, time: day[0].time.slice(0, 5), title: 'Ονειρούπολη: το πρόγραμμα της ημέρας',
+    place: 'Πλατεία Ελευθερίας & Δημοτικός Κήπος', price: 'Δωρεάν', organizer: 'Δήμος Δράμας', christmas: true,
+    desc: day.map(p => `${p.time} · ${p.text}`).join(' '),
+    source: 'Επίσημο πρόγραμμα Ονειρούπολης 2026–2027', article: { title: 'Πρόγραμμα Ονειρούπολης 2026–2027', href: PROGRAM_URL },
+  });
+}
+for (const p of program.filter(p => p.title)) {
+  if (manual.some(e => e.date === p.date && e.time === p.time)) continue;
+  programEvents.push({
+    id: `oneiroupoli-${p.date}-${slugTime(p.time)}${p.parallel ? '-p' + program.filter(q => q.parallel && q.date === p.date).indexOf(p) : ''}`,
+    date: p.date, time: p.time, title: p.title!, place: p.place, price: 'Δωρεάν', organizer: p.parallel ? 'Παράλληλη εκδήλωση της Ονειρούπολης' : 'Δήμος Δράμας',
+    desc: p.text, christmas: true, source: 'Επίσημο πρόγραμμα Ονειρούπολης 2026–2027', article: { title: 'Πρόγραμμα Ονειρούπολης 2026–2027', href: PROGRAM_URL },
+  });
+}
+const allEvents = [...manual, ...programEvents].sort((a, b) => (a.date + (a.time || '')).localeCompare(b.date + (b.time || '')));
 function eventParts(e: EventItem) {
   const [y, m, d] = e.date.split('-').map(Number);
   const dow = DOW[new Date(Date.UTC(y, m - 1, d, 12)).getUTCDay()];
@@ -65,6 +92,29 @@ function recipeHtml(block: Story['blocks'][number]) {
   }
   return `<div class="recipe"><div class="recipeIntro">${intro.join('')}</div><div class="notebook">${photo}${card}</div><div class="recipeDetails">${details.join('')}</div></div>`;
 }
+// Ατζέντα μέσα σε άρθρο. Χτίζεται με όλα τα επερχόμενα· στον browser κρύβονται όσα πέρασαν
+// και το «now» δείχνει την τρέχουσα εβδομάδα (ή τις πρώτες 7 μέρες, αν δεν έχει ξεκινήσει).
+type AgendaRow = { date: string; time: string; title: string; place: string; text: string; href?: string; star?: boolean; parallel?: boolean };
+function agendaRows(view: string): AgendaRow[] {
+  const today = athensToday();
+  const rows: AgendaRow[] = program.map(p => ({ date: p.date, time: p.time, title: p.title || '', place: p.place, text: p.text, star: p.highlight, parallel: p.parallel }));
+  if (view !== 'full') {
+    for (const e of manual.filter(e => e.christmas)) rows.push({ date: e.date, time: e.time || '', title: e.title, place: e.place, text: '', href: `/preview/event/?id=${e.id}`, star: true });
+  } else {
+    for (const e of manual.filter(e => e.christmas && !program.some(p => p.date === e.date && p.time === e.time))) rows.push({ date: e.date, time: e.time || '', title: e.title, place: e.place, text: e.desc, href: `/preview/event/?id=${e.id}`, parallel: true });
+  }
+  return rows.filter(r => r.date >= today).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+}
+function dayLabel(date: string) { const [y, m, d] = date.split('-').map(Number); const dow = DOW[new Date(Date.UTC(y, m - 1, d, 12)).getUTCDay()]; return `${dow} ${d} ${MONTHS[m - 1]}`; }
+function agendaHtml(view: string) {
+  const rows = agendaRows(view);
+  const days = [...new Set(rows.map(r => r.date))];
+  const row = (r: AgendaRow) => `<li class="${r.star ? 'star' : ''}${r.parallel ? ' parallel' : ''}"><time>${escape(r.time || '')}</time><div>${r.title ? `<strong>${r.href ? `<a href="${escape(r.href)}">${escape(r.title)}</a>` : escape(r.title)}</strong> ` : ''}${r.text ? `<span>${escape(r.text)}</span>` : ''}<small>${escape(r.place)}${r.parallel ? ' · Παράλληλη εκδήλωση' : ''}</small></div></li>`;
+  const list = days.map(d => `<section class="agDay" data-date="${d}"><h3>${dayLabel(d)}</h3><ol>${rows.filter(r => r.date === d).map(row).join('')}</ol></section>`).join('');
+  if (view === 'full') return `<div class="agendaFull" data-agenda="full">${list}<p class="agEmpty" hidden>Η Ονειρούπολη ολοκληρώθηκε για φέτος. Τα λέμε τον επόμενο χειμώνα!</p></div>`;
+  return `<div class="agendaNow" data-agenda="now"><div class="agHead"><span class="agBow" aria-hidden="true">✦</span><p class="agKicker">Τώρα στην Ονειρούπολη</p><p class="agRange"></p></div>${list}<p class="agMore"><a href="${PROGRAM_URL}">Όλο το πρόγραμμα της Ονειρούπολης ↗</a> · <a href="/preview/events/">Ατζέντα ↗</a></p></div>`;
+}
+const AGENDA_SCRIPT = `<script>(()=>{const t=new Date().toLocaleDateString('sv-SE',{timeZone:'Europe/Athens'});const add=(d,n)=>{const x=new Date(d+'T12:00:00Z');x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10)};const fmt=d=>{const[y,m,dd]=d.split('-');return +dd+'/'+(+m)};for(const box of document.querySelectorAll('[data-agenda]')){const days=[...box.querySelectorAll('.agDay')];days.forEach(s=>{if(s.dataset.date<t)s.remove()});const left=[...box.querySelectorAll('.agDay')];if(box.dataset.agenda==='full'){if(!left.length)box.querySelector('.agEmpty').hidden=false;continue}if(!left.length){box.remove();continue}const dow=new Date(t+'T12:00:00Z').getUTCDay();let start=t,end=add(t,(7-dow)%7);if(left[0].dataset.date>end){start=left[0].dataset.date;end=add(start,6)}left.forEach(s=>{if(s.dataset.date>end)s.remove()});box.querySelector('.agRange').textContent=(start===t?'Αυτή την εβδομάδα · ':'Ξεκινά σύντομα · ')+fmt(start)+(end!==start?' – '+fmt(end):'')}})()</script>`;
 function blocksHtml(story: Story) {
   return story.blocks.map(block => {
     if (block.layout === 'recipe') return recipeHtml(block);
@@ -76,6 +126,8 @@ function blocksHtml(story: Story) {
         text.push(`<${tag} class="answer">${item.items.map(entry => `<li>${inline(entry)}</li>`).join('')}</${tag}>`);
       } else if (item.type === 'recipe') {
         continue;
+      } else if (item.type === 'agenda') {
+        text.push(agendaHtml(item.view));
       } else if (item.type === 'link') {
         text.push(`<p class="answer"><a href="${escape(item.href)}">${escape(item.text)} ↗</a></p>`);
       } else if (item.type === 'image') {
@@ -188,6 +240,7 @@ export async function preparePage(key: string, story: Story) {
     $('.coverJ > img').replaceWith(imageHtml(story.cover, false));
     $('.opening,.contactSheet,.closing,.recipe').remove();
     $('.noteJ').before(blocksHtml(story));
+    if (story.blocks.some(b => b.items.some(i => i.type === 'agenda'))) $('body').append(AGENDA_SCRIPT);
     if (story.credit) $('.leadJ').after(`<p class="creditJ">${escape(story.credit)}</p>`);
     if (story.disclaimer) $('.noteJ').text(story.disclaimer); else $('.noteJ').remove();
   }

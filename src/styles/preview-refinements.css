@@ -368,3 +368,30 @@ label span, button span:not(.linkArrow) { font-family: inherit !important; }
 .cultureGrid .findThumb img{width:100%;aspect-ratio:4/3;object-fit:cover;height:auto}
 .journal mark.todo{background:#f3e3b5;color:#5a4300;padding:0 4px;border-radius:3px;font-size:.88em}
 @media(max-width:640px){.coverJ > .imgPlaceholder{padding-top:16px}.coverJ > .imgPlaceholder p{display:none}}
+
+/* Ατζέντα Ονειρούπολης μέσα σε άρθρο */
+.agendaNow{position:relative;margin:28px 0;padding:28px clamp(18px,4vw,34px) 22px;border-radius:14px;color:#f7f1e4;background:radial-gradient(circle at 12% 18%,rgba(255,255,255,.14) 0 2px,transparent 3px) 0 0/46px 46px,radial-gradient(circle at 70% 60%,rgba(255,255,255,.10) 0 1.5px,transparent 2.5px) 0 0/34px 34px,linear-gradient(160deg,#1f3d35,#14302a 60%,#0f2621);box-shadow:inset 0 0 0 2px #c9a45c,inset 0 0 0 6px #1f3d35,inset 0 0 0 7px rgba(201,164,92,.55)}
+.agendaNow::before{content:'';position:absolute;top:-10px;left:50%;width:64px;height:20px;transform:translateX(-50%);background:radial-gradient(circle at 25% 50%,#a8342f 0 9px,transparent 10px),radial-gradient(circle at 75% 50%,#a8342f 0 9px,transparent 10px),radial-gradient(circle at 50% 50%,#c9a45c 0 6px,transparent 7px)}
+.agendaNow .agHead{text-align:center;margin-bottom:10px}
+.agendaNow .agBow{color:#c9a45c;font-size:18px}
+.agendaNow .agKicker{margin:2px 0 0;font:700 13px/1.4 Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#e9d39f}
+.agendaNow .agRange{margin:4px 0 0;font-size:15px;opacity:.85}
+.agendaNow h3,.agendaFull h3{margin:18px 0 6px;font:400 22px/1.2 Georgia,serif}
+.agendaNow h3{color:#e9d39f;border-bottom:1px dashed rgba(233,211,159,.45);padding-bottom:4px}
+.agendaNow ol,.agendaFull ol{list-style:none;margin:0;padding:0}
+.agendaNow li,.agendaFull li{display:grid;grid-template-columns:92px 1fr;gap:12px;padding:8px 0;font-size:15px;line-height:1.45}
+.agendaNow li+li{border-top:1px solid rgba(255,255,255,.08)}
+.agendaNow time{font-weight:700;color:#e9d39f;font-variant-numeric:tabular-nums}
+.agendaNow small,.agendaFull small{display:block;opacity:.7;font-size:13px;margin-top:2px}
+.agendaNow li.star strong{color:#fff}
+.agendaNow li.star time::before{content:'★ ';color:#d9534f}
+.agendaNow a{color:#f7f1e4;text-decoration:underline;text-decoration-color:#c9a45c}
+.agendaNow .agMore{margin:16px 0 0;text-align:center;font-size:14px}
+.agendaFull{margin:12px 0 28px}
+.agendaFull .agDay{padding:6px 0 10px;border-bottom:1px solid rgba(43,43,43,.12)}
+.agendaFull h3{color:var(--sea,#3f6068)}
+.agendaFull time{font-weight:700;font-variant-numeric:tabular-nums}
+.agendaFull li.star strong::after{content:' ★';color:#a8342f}
+.agendaFull li.parallel{opacity:.92}
+.agendaFull li.parallel small{font-style:italic}
+@media(max-width:640px){.agendaNow li,.agendaFull li{grid-template-columns:74px 1fr;gap:10px;font-size:14px}}
